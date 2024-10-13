@@ -3,11 +3,11 @@ import '../App.css'
 
 const CreateCar = () => {
 
-    return (
-        <div>
+  return (
+    <div>
 
-        </div>
-    )
+    </div>
+  )
 }
 
 export default CreateCar
