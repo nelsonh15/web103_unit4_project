@@ -12,7 +12,7 @@ const router = express.Router()
 // define routes to get, create, edit, and delete items
 router.get('/exterior', getExterior);
 router.get('/hood', getHood);
-router.get('interior', getInterior);
+router.get('/interior', getInterior);
 router.get('/restriction', getRestriction);
 router.get('/spoiler', getSpoiler);
 router.get('/wheels', getWheels);

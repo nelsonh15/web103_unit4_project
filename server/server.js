@@ -25,7 +25,9 @@ else if (process.env.NODE_ENV === 'production') {
 }
 
 // specify the api path for the server to use
-
+app.get('/api', (req, res) => {
+    res.status(200).send("API is running");
+})
 
 if (process.env.NODE_ENV === 'production') {
     app.get('/*', (_, res) =>

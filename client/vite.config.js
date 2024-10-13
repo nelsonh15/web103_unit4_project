@@ -18,6 +18,27 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://localhost:3000'
+      },
+      '/exterior': {
+        target: 'http://localhost:3000'
+      },
+      '/hood': {
+        target: 'http://localhost:3000'
+      },
+      '/interior': {
+        target: 'http://localhost:3000'
+      },
+      '/restriction': {
+        target: 'http://localhost:3000'
+      },
+      '/spoiler': {
+        target: 'http://localhost:3000'
+      },
+      '/wheels': {
+        target: 'http://localhost:3000'
+      },
+      '/cars': {
+        target: 'http://localhost:3000'
       }
     }
   }
