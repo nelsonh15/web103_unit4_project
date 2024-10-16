@@ -8,6 +8,12 @@
     "reset": "cd server/config && node --require dotenv/config reset.js"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.4",
+    "@mui/joy": "^5.0.0-beta.48",
+    "@mui/lab": "^6.0.0-beta.11",
+    "@mui/material": "^6.1.4",
     "@picocss/pico": "^1.5.7",
     "concurrently": "^7.6.0",
     "dotenv": "^16.0.3",

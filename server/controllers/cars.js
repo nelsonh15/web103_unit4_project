@@ -15,7 +15,7 @@ export const getCars = async (req, res) => {
 
 export const createCars = async (req, res) => {
   try {
-    const { name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id } = req.body
+    const { name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id } = req.body
     const results = await pool.query(`
         INSERT INTO cars (name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id)
         VALUES($1, $2, $3, $4, $5, $6, $7)
