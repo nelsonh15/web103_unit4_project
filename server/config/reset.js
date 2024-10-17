@@ -15,15 +15,20 @@ const createCarsTable = async () => {
       name VARCHAR(255) NOT NULL,
       price SERIAL NOT NULL,
       exterior_id SERIAL NOT NULL,
-      hood_id SERIAL NOT NULL,
       interior_id SERIAL NOT NULL,
+      hood_id SERIAL NOT NULL,
       spoiler_id SERIAL NOT NULL,
       wheels_id SERIAL NOT NULL,
       exterior_name VARCHAR(255) NOT NULL,
       interior_name VARCHAR(255) NOT NULL,
       hood_name VARCHAR(255) NOT NULL,
       spoiler_name VARCHAR(255) NOT NULL,
-      wheels_name VARCHAR(255) NOT NULL
+      wheels_name VARCHAR(255) NOT NULL,
+      exterior_price SERIAL NOT NULL,
+      interior_price SERIAL NOT NULL,
+      hood_price SERIAL NOT NULL,
+      spoiler_price SERIAL NOT NULL,
+      wheels_price SERIAL NOT NULL
     );
     `
   try {

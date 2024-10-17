@@ -10,7 +10,7 @@ import { loadAllSpoilers } from '../services/SpoilerAPI';
 import { loadAllWheels } from '../services/WheelsAPI';
 import PropTypes from 'prop-types';
 import { useTheme, styled } from '@mui/material/styles';
-import { Box, Button, Chip, Divider, Paper, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Chip, Divider, Paper, Tab, Tabs, Typography } from '@mui/material';
 import CustomItem from '../components/CustomItem';
 
 const Root = styled('div')(({ theme }) => ({
@@ -81,18 +81,18 @@ const CreateCar = () => {
   const [hoodsName, sethoodsName] = useState("");
   const [spoilersName, setspoilersName] = useState("");
   const [wheelsName, setwheelsName] = useState("");
-  const [exteriorsPrice, setexteriorsPrice] = useState("");
-  const [interiorsPrice, setinteriorsPrice] = useState("");
-  const [hoodsPrice, sethoodsPrice] = useState("");
-  const [spoilersPrice, setspoilersPrice] = useState("");
-  const [wheelsPrice, setwheelsPrice] = useState("");
+  const [exteriorsPrice, setexteriorsPrice] = useState(0);
+  const [interiorsPrice, setinteriorsPrice] = useState(0);
+  const [hoodsPrice, sethoodsPrice] = useState(0);
+  const [spoilersPrice, setspoilersPrice] = useState(0);
+  const [wheelsPrice, setwheelsPrice] = useState(0);
   const [itemsSelected, setItemsSelected] = useState(new Map());
   const [selectedExteriorId, setSelectedExteriorId] = useState(null);
   const [selectedInteriorId, setSelectedInteriorId] = useState(null);
   const [selectedHoodId, setSelectedHoodId] = useState(null);
   const [selectedSpoilerId, setSelectedSpoilerId] = useState(null);
   const [selectedWheelId, setSelectedWheelId] = useState(null);
-
+  
   useEffect(() => {
     (async () => {
       try {
@@ -120,35 +120,35 @@ const CreateCar = () => {
 
   const handleExteriorSelect = (Id) => {
     setexteriorsName(exteriors[Id - 1].name)
-    setexteriorsPrice("$" + exteriors[Id - 1].price)
+    setexteriorsPrice(exteriors[Id - 1].price)
     setSelectedExteriorId(Id);
 
     setItemsSelected(map => new Map(map.set("Exterior", exteriors[Id - 1].price)));
   };
   const handleInteriorSelect = (Id) => {
     setinteriorsName(interiors[Id - 1].name)
-    setinteriorsPrice("$" + interiors[Id - 1].price)
+    setinteriorsPrice(interiors[Id - 1].price)
     setSelectedInteriorId(Id);
 
     setItemsSelected(map => new Map(map.set("Interior", interiors[Id - 1].price)));
   };
   const handleHoodSelect = (Id) => {
     sethoodsName(hoods[Id - 1].name)
-    sethoodsPrice("$" + hoods[Id - 1].price)
+    sethoodsPrice(hoods[Id - 1].price)
     setSelectedHoodId(Id);
 
     setItemsSelected(map => new Map(map.set("Hood", hoods[Id - 1].price)));
   };
   const handleSpoilerSelect = (Id) => {
     setspoilersName(spoilers[Id - 1].name)
-    setspoilersPrice("$" + spoilers[Id - 1].price)
+    setspoilersPrice(spoilers[Id - 1].price)
     setSelectedSpoilerId(Id);
 
     setItemsSelected(map => new Map(map.set("Spoiler", spoilers[Id - 1].price)));
   };
   const handleWheelSelect = (Id) => {
     setwheelsName(wheels[Id - 1].name)
-    setwheelsPrice("$" + wheels[Id - 1].price)
+    setwheelsPrice(wheels[Id - 1].price)
     setSelectedWheelId(Id);
 
     setItemsSelected(map => new Map(map.set("Wheel", wheels[Id - 1].price)));
@@ -165,7 +165,25 @@ const CreateCar = () => {
 
   const handleSubmit = async () => {
     if (selectedExteriorId != null && selectedInteriorId != null && selectedHoodId != null && selectedSpoilerId != null && selectedWheelId != null) {
-      await createCar(carName, price, selectedExteriorId, selectedInteriorId, selectedHoodId, selectedSpoilerId, selectedWheelId, exteriorsName, interiorsName, hoodsName, spoilersName, wheelsName);
+      await createCar(
+        carName, 
+        price, 
+        selectedExteriorId, 
+        selectedInteriorId, 
+        selectedHoodId, 
+        selectedSpoilerId, 
+        selectedWheelId, 
+        exteriorsName, 
+        interiorsName, 
+        hoodsName, 
+        spoilersName, 
+        wheelsName,
+        exteriorsPrice,
+        interiorsPrice,
+        hoodsPrice,
+        spoilersPrice,
+        wheelsPrice
+      );
       setSelectedExteriorId(null);
       setSelectedInteriorId(null);
       setSelectedHoodId(null);
@@ -178,11 +196,11 @@ const CreateCar = () => {
       sethoodsName("")
       setspoilersName("")
       setwheelsName("")
-      setexteriorsPrice("")
-      setinteriorsPrice("")
-      sethoodsPrice("")
-      setspoilersPrice("")
-      setwheelsPrice("")
+      setexteriorsPrice(0)
+      setinteriorsPrice(0)
+      sethoodsPrice(0)
+      setspoilersPrice(0)
+      setwheelsPrice(0)
       setItemsSelected(new Map());
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 2000);
@@ -350,7 +368,7 @@ const CreateCar = () => {
                 <Typography variant="h5" sx={{ color: 'white', textTransform: 'uppercase', fontSize: 16 }}>{exteriorsName} </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', paddingX: 5, }}>
-                <Typography sx={{ fontWeight: 'bold' }}>{exteriorsPrice} </Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>${exteriorsPrice} </Typography>
               </Box>
             </Box>
             <Divider><Chip label="Exterior" size="small" /></Divider>
@@ -360,7 +378,7 @@ const CreateCar = () => {
                 <Typography variant="h5" sx={{ color: 'white', textTransform: 'uppercase', fontSize: 16 }}>{interiorsName} </Typography>
               </Box>
               <Box sx={{ paddingX: 5 }}>
-                <Typography sx={{ fontWeight: 'bold' }}>{interiorsPrice} </Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>${interiorsPrice} </Typography>
               </Box>
             </Box>
             <Divider><Chip label="Interior" size="small" /></Divider>
@@ -370,7 +388,7 @@ const CreateCar = () => {
                 <Typography variant="h5" sx={{ color: 'white', textTransform: 'uppercase', fontSize: 16 }}> {hoodsName} </Typography>
               </Box>
               <Box sx={{ paddingX: 5, }}>
-                <Typography sx={{ fontWeight: 'bold' }}>{hoodsPrice} </Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>${hoodsPrice} </Typography>
               </Box>
             </Box>
             <Divider><Chip label="Hood" size="small" /></Divider>
@@ -380,7 +398,7 @@ const CreateCar = () => {
                 <Typography variant="h5" sx={{ color: 'white', textTransform: 'uppercase', fontSize: 16 }}> {spoilersName} </Typography>
               </Box>
               <Box sx={{ paddingX: 5 }}>
-                <Typography sx={{ fontWeight: 'bold' }}>{spoilersPrice} </Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>${spoilersPrice} </Typography>
               </Box>
             </Box>
             <Divider><Chip label="Spoiler" size="small" /></Divider>
@@ -390,7 +408,7 @@ const CreateCar = () => {
                 <Typography variant="h5" sx={{ color: 'white', textTransform: 'uppercase', fontSize: 16, }}> {wheelsName}</Typography>
               </Box>
               <Box sx={{ paddingX: 5 }}>
-                <Typography sx={{ fontWeight: 'bold' }}>{wheelsPrice} </Typography>
+                <Typography sx={{ fontWeight: 'bold' }}>${wheelsPrice} </Typography>
               </Box>
             </Box>
             <Divider><Chip label="Wheel" size="small" /></Divider>
