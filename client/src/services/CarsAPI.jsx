@@ -19,7 +19,7 @@ export const getCarById = async (id) => {
   }
 };
 
-export const createCar = async (name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id, exteriorsName, interiorsName, hoodsName, spoilersName, wheelsName) => {
+export const createCar = async (name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id, exteriorsName, interiorsName, hoodsName, spoilersName, wheelsName, exterior_price, interior_price, hood_price, spoiler_price, wheels_price) => {
   try {
     const data = {
       name: name, 
@@ -33,7 +33,12 @@ export const createCar = async (name, price, exterior_id, interior_id, hood_id, 
       interior_name: interiorsName, 
       hood_name: hoodsName, 
       spoiler_name: spoilersName, 
-      wheels_name: wheelsName
+      wheels_name: wheelsName,
+      exterior_price: exterior_price,
+      interior_price: interior_price,
+      hood_price: hood_price,
+      spoiler_price: spoiler_price,
+      wheels_price: wheels_price
     }
 
     const options = {
@@ -69,11 +74,40 @@ export const deleteCar = async (id) => {
   }
 };
 
-export const editCar = async (id) => {
+export const editCar = async (carName, price, exterior_id, interior_id, hood_id, spoiler_id, wheel_id, exterior_name, interior_name, hood_name, spoiler_name, wheels_name, exterior_price, interior_price, hood_price, spoiler_price, wheels_price, id) => {
   try {
-
+    const data = {
+      name: carName, 
+      price: price, 
+      exterior_id: exterior_id, 
+      interior_id: interior_id, 
+      hood_id: hood_id, 
+      spoiler_id: spoiler_id, 
+      wheels_id: wheel_id, 
+      exterior_name: exterior_name, 
+      interior_name: interior_name, 
+      hood_name: hood_name, 
+      spoiler_name: spoiler_name, 
+      wheels_name: wheels_name, 
+      exterior_price: exterior_price, 
+      interior_price: interior_price, 
+      hood_price: hood_price, 
+      spoiler_price: spoiler_price, 
+      wheels_price: wheels_price,
+    }
+    const options = {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }
+    const response = fetch(`/cars/${id}`, options)
+    if (response.ok) {
+      return response;
+    }
   }
   catch (error) {
-
+    console.error(`Error updating cars with id: ${id}`, error);
   }
 };

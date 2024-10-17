@@ -25,9 +25,18 @@ const ViewCars = () => {
 
   const viewCarHandler = async (id) => {
     const selectedCar = allCars.find(car => car.id === id);
-
     if (selectedCar) {
       navigate(`/customcars/${id}`, { state: { car: selectedCar } });
+    } else {
+      console.error('Car not found');
+    }
+  }
+
+  const editCarHandler = async (id) => {
+    const selectedCar = allCars.find(car => car.id === id);
+
+    if (selectedCar) {
+      navigate(`/edit/${id}`, { state: { car: selectedCar } });
     } else {
       console.error('Car not found');
     }
@@ -36,7 +45,6 @@ const ViewCars = () => {
   const deleteCarHandler = async (id) => {
     const response = await deleteCar(id);
     if (response.ok) {
-      console.log('Car deleted!');
       setAllCars(prevCars => prevCars.filter(car => car.id !== id));
     }
     else {
@@ -66,6 +74,7 @@ const ViewCars = () => {
               spoiler={car.spoiler_name}
               wheels={car.wheels_name}
               viewCarHandler={viewCarHandler}
+              editCarHandler={editCarHandler}
               deleteCarHandler={deleteCarHandler}
             />
           </Box>

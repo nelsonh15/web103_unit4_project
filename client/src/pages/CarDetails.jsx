@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Box } from '@mui/material';
-import { AspectRatio, Button, Card, CardContent, IconButton, List, ListItem, Typography } from '@mui/joy';
-import BookmarkAdd from '@mui/icons-material/BookmarkAddOutlined';
+import { AspectRatio, Card, CardContent, Typography } from '@mui/joy';
 import '../App.css'
 import { useLocation } from 'react-router-dom';
 import { getExteriorById } from "../services/ExteriorAPI";
