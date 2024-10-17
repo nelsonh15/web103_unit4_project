@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom';
 import '../App.css'
 import { loadAllCars, deleteCar } from '../services/CarsAPI';
 import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { List, ListItem } from '@mui/joy';
-import CustomCard from '../components/CustomCar';
+import CustomCar from '../components/CustomCar';
 
 const ViewCars = () => {
+  const navigate = useNavigate();
   const [allCars, setAllCars] = useState([]);
-  console.log(allCars);
+  
   useEffect(() => {
     const getAllCars = async () => {
       try {
@@ -20,6 +22,16 @@ const ViewCars = () => {
     }
     getAllCars();
   }, [])
+
+  const viewCarHandler = async (id) => {
+    const selectedCar = allCars.find(car => car.id === id);
+
+    if (selectedCar) {
+      navigate(`/customcars/${id}`, { state: { car: selectedCar } });
+    } else {
+      console.error('Car not found');
+    }
+  }
 
   const deleteCarHandler = async (id) => {
     const response = await deleteCar(id);
@@ -44,7 +56,7 @@ const ViewCars = () => {
               width: '100%',
               alignItems: 'center'
             }}>
-            <CustomCard
+            <CustomCar
               id={car.id}
               name={car.name}
               price={car.price}
@@ -53,6 +65,7 @@ const ViewCars = () => {
               hood={car.hood_name}
               spoiler={car.spoiler_name}
               wheels={car.wheels_name}
+              viewCarHandler={viewCarHandler}
               deleteCarHandler={deleteCarHandler}
             />
           </Box>

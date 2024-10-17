@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, Button, Card, CardContent, Typography } from '@mui/material';
 import { List, ListItem } from '@mui/joy';
 
-function CustomCar({ id, name, price, exterior, interior, hood, spoiler, wheels, deleteCarHandler}) {
+function CustomCar({ id, name, price, exterior, interior, hood, spoiler, wheels, viewCarHandler, deleteCarHandler }) {
   const image = "https://boltbucket.up.railway.app/assets/convertible-d1e22bba.png";
 
   return (
@@ -65,10 +65,17 @@ function CustomCar({ id, name, price, exterior, interior, hood, spoiler, wheels,
 
       </CardContent>
       <Box sx={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center', width: '25%', padding: 3 }}>
+        <Button variant="contained" sx={{ fontSize: '1vw', minWidth: '150px' }}
+          onClick={(e) => {
+            e.stopPropagation();
+            viewCarHandler(id)
+          }}>
+          View
+        </Button>
         <Button variant="contained" sx={{ fontSize: '1vw', minWidth: '150px' }}>
           Edit
         </Button>
-        <Button variant="contained" sx={{ fontSize: '1vw', minWidth: '150px', mt: 1 }}
+        <Button variant="contained" sx={{ fontSize: '1vw', minWidth: '150px' }}
           onClick={(e) => {
             e.stopPropagation();
             deleteCarHandler(id)
