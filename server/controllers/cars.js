@@ -13,16 +13,26 @@ export const getCars = async (req, res) => {
   }
 }
 
+export const getCarsById = async (req, res) => {
+  try {
+    const id = parseInt(req.params.id)
+    const results = await pool.query('SELECT * FROM cars WHERE id = $1', [id])
+    res.status(200).json(results.rows[0])
+  }
+  catch (error) {
+    res.status(409).json({ error: error.message })
+  }
+}
+
 export const createCars = async (req, res) => {
   try {
-    const { name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id } = req.body
+    const { name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id, exterior_name, interior_name, hood_name, spoiler_name, wheels_name } = req.body
     const results = await pool.query(`
-        INSERT INTO cars (name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id)
-        VALUES($1, $2, $3, $4, $5, $6, $7)
+        INSERT INTO cars (name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id, exterior_name, interior_name, hood_name, spoiler_name, wheels_name)
+        VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
         RETURNING *`,
-      [name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id]
+      [name, price, exterior_id, hood_id, interior_id, spoiler_id, wheels_id, exterior_name, interior_name, hood_name, spoiler_name, wheels_name]
     )
-
     res.status(201).json(results.rows[0])
   } catch (error) {
     res.status(409).json({ error: error.message })

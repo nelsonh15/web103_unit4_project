@@ -34,7 +34,7 @@ function TabPanel(props) {
     >
       {value === index && (
         <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
+          <Box>{children}</Box>
         </Box>
       )}
     </div>
@@ -67,6 +67,7 @@ const DemoPaper = styled(Paper)(({ theme }) => ({
 const CreateCar = () => {
   const theme = useTheme();
   const [submitted, setSubmitted] = useState(false);
+  const [missingItem, setMissingItem] = useState(false);
   const [value, setValue] = useState(0);
   const [carName, setCarName] = useState('');
   const [price, setPrice] = useState(60000);
@@ -162,9 +163,9 @@ const CreateCar = () => {
     setCarName(event.target.value); // Update the car name state on input change
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedExteriorId != null && selectedInteriorId != null && selectedHoodId != null && selectedSpoilerId != null && selectedWheelId != null) {
-      createCar(carName, price, selectedExteriorId, selectedInteriorId, selectedHoodId, selectedSpoilerId, selectedWheelId);
+      await createCar(carName, price, selectedExteriorId, selectedInteriorId, selectedHoodId, selectedSpoilerId, selectedWheelId, exteriorsName, interiorsName, hoodsName, spoilersName, wheelsName);
       setSelectedExteriorId(null);
       setSelectedInteriorId(null);
       setSelectedHoodId(null);
@@ -187,7 +188,8 @@ const CreateCar = () => {
       setTimeout(() => setSubmitted(false), 2000);
     }
     else {
-      console.log('empty')
+      setMissingItem(true);
+      setTimeout(() => setMissingItem(false), 2000);
     }
   }
 
@@ -404,6 +406,7 @@ const CreateCar = () => {
         </Box>
       </Box>
       <FormSubmitted open={submitted} setOpen={setSubmitted} message="Car Created!" />
+      <FormSubmitted open={missingItem} setOpen={setMissingItem} message="You must make a selection for each custom item." />
     </div>
   );
 }

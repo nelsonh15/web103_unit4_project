@@ -19,7 +19,7 @@ export const getCarById = async (id) => {
   }
 };
 
-export const createCar = async (name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id) => {
+export const createCar = async (name, price, exterior_id, interior_id, hood_id, spoiler_id, wheels_id, exteriorsName, interiorsName, hoodsName, spoilersName, wheelsName) => {
   try {
     const data = {
       name: name, 
@@ -28,7 +28,12 @@ export const createCar = async (name, price, exterior_id, interior_id, hood_id, 
       interior_id: interior_id, 
       hood_id: hood_id, 
       spoiler_id: spoiler_id, 
-      wheels_id: wheels_id
+      wheels_id: wheels_id,
+      exterior_name: exteriorsName, 
+      interior_name: interiorsName, 
+      hood_name: hoodsName, 
+      spoiler_name: spoilersName, 
+      wheels_name: wheelsName
     }
 
     const options = {
@@ -38,7 +43,7 @@ export const createCar = async (name, price, exterior_id, interior_id, hood_id, 
       },
       body: JSON.stringify(data),
     }
-    const response = fetch('/cars', options)
+    const response = fetch(`/cars`, options)
     if (response.ok) {
       return response;
     }
@@ -50,10 +55,17 @@ export const createCar = async (name, price, exterior_id, interior_id, hood_id, 
 
 export const deleteCar = async (id) => {
   try {
-
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }
+    const response = fetch(`/cars/${id}`, options)
+    return response;
   }
   catch (error) {
-
+    console.error(`Error deleting car with id: ${id}`, error);
   }
 };
 

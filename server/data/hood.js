@@ -9,13 +9,13 @@ const hoodData = [
     "id": 2,
     "name": "Steel Refined Luxury Hood",
     "price": 1150,
-    "image": "https://i.imgur.com/ETGiS60.jpeg"
+    "image": "https://i.imgur.com/wq3pjqC.jpeg"
   },
   {
     "id": 3,
     "name": "Fiberglass Multi Dimensional Cross (X) Hood",
     "price": 1200,
-    "image": "https://i.imgur.com/G2fZqNe.jpeg"
+    "image": "https://i.imgur.com/VEojL92.jpeg"
   },
   {
     "id": 4,

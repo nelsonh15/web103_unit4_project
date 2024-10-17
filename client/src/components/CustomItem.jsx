@@ -54,7 +54,6 @@ const ContentContainer = styled(CardContent)({
 
 function CustomItem({ item, selected, onSelect }) {
   return (
-    
     <Box sx={{  display: 'flex', justifyContent: 'center' }}>
       <CustomCard selected={selected}>
         <StyledCardActionArea onClick={() => onSelect(item.id)}>
