@@ -10,8 +10,10 @@ import { loadAllSpoilers } from '../services/SpoilerAPI';
 import { loadAllWheels } from '../services/WheelsAPI';
 import PropTypes from 'prop-types';
 import { useTheme, styled } from '@mui/material/styles';
-import { Box, Button, Chip, Divider, Paper, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Button, Chip, Divider, Paper, Snackbar, Tab, Tabs, Typography } from '@mui/material';
+import MuiAlert from '@mui/material/Alert';
 import CustomItem from '../components/CustomItem';
+import { loadAllRestrictions } from '../services/RestrictionAPI';
 
 const Root = styled('div')(({ theme }) => ({
   ...theme.typography.body2,
@@ -92,10 +94,16 @@ const CreateCar = () => {
   const [selectedHoodId, setSelectedHoodId] = useState(null);
   const [selectedSpoilerId, setSelectedSpoilerId] = useState(null);
   const [selectedWheelId, setSelectedWheelId] = useState(null);
-  
+  const [restriction, setRestriction] = useState(null);
+  const [restrictedItems, setRestrictedItems] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+
   useEffect(() => {
     (async () => {
       try {
+        const restrictionData = await loadAllRestrictions();
+        setRestriction(restrictionData);
         const exteriorData = await loadAllExteriors();
         setExteriors(exteriorData);
         const interiorData = await loadAllInteriors();
@@ -106,77 +114,174 @@ const CreateCar = () => {
         setSpoilers(spoilersData);
         const wheelsData = await loadAllWheels();
         setWheels(wheelsData);
+      } catch (error) {
+        console.error("Error loading data:", error);
       }
-      catch (error) {
-        throw error
-      }
-    })()
-  }, [])
+    })();
+  }, []);
+
+  useEffect(() => {
+    updateRestrictedItems();
+  }, [selectedExteriorId, selectedInteriorId, selectedHoodId, selectedSpoilerId, selectedWheelId, restriction]);
 
   useEffect(() => {
     const updatedPrice = calcprice(itemsSelected);
     setPrice(updatedPrice);
   }, [itemsSelected]);
 
-  const handleExteriorSelect = (Id) => {
-    setexteriorsName(exteriors[Id - 1].name)
-    setexteriorsPrice(exteriors[Id - 1].price)
-    setSelectedExteriorId(Id);
+  const updateRestrictedItems = () => {
+    if (!restriction) return;
 
-    setItemsSelected(map => new Map(map.set("Exterior", exteriors[Id - 1].price)));
-  };
-  const handleInteriorSelect = (Id) => {
-    setinteriorsName(interiors[Id - 1].name)
-    setinteriorsPrice(interiors[Id - 1].price)
-    setSelectedInteriorId(Id);
+    const newRestrictedItems = [];
+    restriction.forEach(r => {
+      const selectedItems = {
+        exterior_id: selectedExteriorId,
+        interior_id: selectedInteriorId,
+        hood_id: selectedHoodId,
+        spoiler_id: selectedSpoilerId,
+        wheels_id: selectedWheelId
+      };
 
-    setItemsSelected(map => new Map(map.set("Interior", interiors[Id - 1].price)));
-  };
-  const handleHoodSelect = (Id) => {
-    sethoodsName(hoods[Id - 1].name)
-    sethoodsPrice(hoods[Id - 1].price)
-    setSelectedHoodId(Id);
+      let isRestrictionActive = false;
+      Object.entries(selectedItems).forEach(([key, value]) => {
+        if (r[key] === value && value !== null) {
+          isRestrictionActive = true;
+        }
+      });
 
-    setItemsSelected(map => new Map(map.set("Hood", hoods[Id - 1].price)));
-  };
-  const handleSpoilerSelect = (Id) => {
-    setspoilersName(spoilers[Id - 1].name)
-    setspoilersPrice(spoilers[Id - 1].price)
-    setSelectedSpoilerId(Id);
-
-    setItemsSelected(map => new Map(map.set("Spoiler", spoilers[Id - 1].price)));
-  };
-  const handleWheelSelect = (Id) => {
-    setwheelsName(wheels[Id - 1].name)
-    setwheelsPrice(wheels[Id - 1].price)
-    setSelectedWheelId(Id);
-
-    setItemsSelected(map => new Map(map.set("Wheel", wheels[Id - 1].price)));
+      if (isRestrictionActive) {
+        Object.entries(r).forEach(([key, value]) => {
+          if (value !== null && key !== 'id' && selectedItems[key] !== value) {
+            const category = key.replace('_id', '');
+            const itemName = getItemName(category, value);
+            newRestrictedItems.push({ category, id: value, name: itemName });
+          }
+        });
+      }
+    });
+    setRestrictedItems(newRestrictedItems);
+    updateSnackbarMessage(newRestrictedItems);
   };
 
-  // for the tab change
+  const getItemName = (category, id) => {
+    let items;
+    switch (category) {
+      case 'exterior':
+        items = exteriors;
+        break;
+      case 'interior':
+        items = interiors;
+        break;
+      case 'hood':
+        items = hoods;
+        break;
+      case 'spoiler':
+        items = spoilers;
+        break;
+      case 'wheels':
+        items = wheels;
+        break;
+      default:
+        return 'Unknown';
+    }
+    const item = items.find(item => item.id === id);
+    return item ? item.name : 'Unknown';
+  };
+
+  const updateSnackbarMessage = (newRestrictedItems) => {
+    if (newRestrictedItems.length > 0) {
+      const itemsList = newRestrictedItems.map(item => `${item.name} (${item.category})`).join(', ');
+      setSnackbarMessage(`The following items are now restricted: ${itemsList}`);
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleItemSelect = (category, id) => {
+    if (isItemRestricted(category, id)) {
+      return; // Don't allow selection of restricted items
+    }
+
+    let updatedItemsSelected = new Map(itemsSelected);
+    let nameSetterFunc, priceSetterFunc, idSetterFunc, items;
+    updateRestrictedItems();
+
+    switch (category) {
+      case 'exterior':
+        nameSetterFunc = setexteriorsName;
+        priceSetterFunc = setexteriorsPrice;
+        idSetterFunc = setSelectedExteriorId;
+        items = exteriors;
+        break;
+      case 'interior':
+        nameSetterFunc = setinteriorsName;
+        priceSetterFunc = setinteriorsPrice;
+        idSetterFunc = setSelectedInteriorId;
+        items = interiors;
+        break;
+      case 'hood':
+        nameSetterFunc = sethoodsName;
+        priceSetterFunc = sethoodsPrice;
+        idSetterFunc = setSelectedHoodId;
+        items = hoods;
+        break;
+      case 'spoiler':
+        nameSetterFunc = setspoilersName;
+        priceSetterFunc = setspoilersPrice;
+        idSetterFunc = setSelectedSpoilerId;
+        items = spoilers;
+        break;
+      case 'wheels':
+        nameSetterFunc = setwheelsName;
+        priceSetterFunc = setwheelsPrice;
+        idSetterFunc = setSelectedWheelId;
+        items = wheels;
+        break;
+    }
+
+    const selectedItem = items.find(item => item.id === id);
+    if (selectedItem) {
+      nameSetterFunc(selectedItem.name);
+      priceSetterFunc(selectedItem.price);
+      idSetterFunc(id);
+      updatedItemsSelected.set(category, selectedItem.price);
+      setItemsSelected(updatedItemsSelected);
+    }
+    setSnackbarOpen(true);
+  };
+
+  const isItemRestricted = (category, id) => {
+    return restrictedItems.some(item => item.category === category && item.id === id);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
+  };
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const handleCarNameChange = (event) => {
-    setCarName(event.target.value); // Update the car name state on input change
+    setCarName(event.target.value);
   };
 
   const handleSubmit = async () => {
     if (selectedExteriorId != null && selectedInteriorId != null && selectedHoodId != null && selectedSpoilerId != null && selectedWheelId != null) {
       await createCar(
-        carName, 
-        price, 
-        selectedExteriorId, 
-        selectedInteriorId, 
-        selectedHoodId, 
-        selectedSpoilerId, 
-        selectedWheelId, 
-        exteriorsName, 
-        interiorsName, 
-        hoodsName, 
-        spoilersName, 
+        carName,
+        price,
+        selectedExteriorId,
+        selectedInteriorId,
+        selectedHoodId,
+        selectedSpoilerId,
+        selectedWheelId,
+        exteriorsName,
+        interiorsName,
+        hoodsName,
+        spoilersName,
         wheelsName,
         exteriorsPrice,
         interiorsPrice,
@@ -191,25 +296,27 @@ const CreateCar = () => {
       setSelectedWheelId(null);
       setCarName("");
       setPrice(60000);
-      setexteriorsName("")
-      setinteriorsName("")
-      sethoodsName("")
-      setspoilersName("")
-      setwheelsName("")
-      setexteriorsPrice(0)
-      setinteriorsPrice(0)
-      sethoodsPrice(0)
-      setspoilersPrice(0)
-      setwheelsPrice(0)
+      setexteriorsName("");
+      setinteriorsName("");
+      sethoodsName("");
+      setspoilersName("");
+      setwheelsName("");
+      setexteriorsPrice(0);
+      setinteriorsPrice(0);
+      sethoodsPrice(0);
+      setspoilersPrice(0);
+      setwheelsPrice(0);
       setItemsSelected(new Map());
       setSubmitted(true);
+      setRestrictedItems([]);
+      setSnackbarOpen(false);
+      setSnackbarMessage('');
       setTimeout(() => setSubmitted(false), 2000);
-    }
-    else {
+    } else {
       setMissingItem(true);
       setTimeout(() => setMissingItem(false), 2000);
     }
-  }
+  };
 
   return (
     <div>
@@ -274,7 +381,9 @@ const CreateCar = () => {
                     key={exterior.id}
                     item={exterior}
                     selected={exterior.id === selectedExteriorId}
-                    onSelect={handleExteriorSelect}
+                    onSelect={handleItemSelect}
+                    isRestricted={isItemRestricted('exterior', exterior.id)}
+                    category="exterior"
                   />
                 ))}
               </Box>
@@ -293,7 +402,9 @@ const CreateCar = () => {
                     key={interior.id}
                     item={interior}
                     selected={interior.id === selectedInteriorId}
-                    onSelect={handleInteriorSelect}
+                    onSelect={handleItemSelect}
+                    isRestricted={isItemRestricted('interior', interior.id)}
+                    category="interior"
                   />
                 ))}
               </Box>
@@ -312,7 +423,9 @@ const CreateCar = () => {
                     key={hood.id}
                     item={hood}
                     selected={hood.id === selectedHoodId}
-                    onSelect={handleHoodSelect}
+                    onSelect={handleItemSelect}
+                    isRestricted={isItemRestricted('hood', hood.id)}
+                    category="hood"
                   />
                 ))}
               </Box>
@@ -331,7 +444,9 @@ const CreateCar = () => {
                     key={spoiler.id}
                     item={spoiler}
                     selected={spoiler.id === selectedSpoilerId}
-                    onSelect={handleSpoilerSelect}
+                    onSelect={handleItemSelect}
+                    isRestricted={isItemRestricted('spoiler', spoiler.id)}
+                    category="spoiler"
                   />
                 ))}
               </Box>
@@ -350,7 +465,9 @@ const CreateCar = () => {
                     key={wheel.id}
                     item={wheel}
                     selected={wheel.id === selectedWheelId}
-                    onSelect={handleWheelSelect}
+                    onSelect={handleItemSelect}
+                    isRestricted={isItemRestricted('wheels', wheel.id)}
+                    category="wheels"
                   />
                 ))}
               </Box>
@@ -425,6 +542,11 @@ const CreateCar = () => {
       </Box>
       <FormSubmitted open={submitted} setOpen={setSubmitted} message="Car Created!" />
       <FormSubmitted open={missingItem} setOpen={setMissingItem} message="You must make a selection for each custom item." />
+      <Snackbar open={snackbarOpen} onClose={handleSnackbarClose}>
+        <MuiAlert onClose={handleSnackbarClose} severity="warning" sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </MuiAlert>
+      </Snackbar>
     </div>
   );
 }
