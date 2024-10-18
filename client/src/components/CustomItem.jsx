@@ -8,6 +8,19 @@ const CARD_HEIGHT = 350; // Fixed height for all cards
 const IMAGE_HEIGHT = 400; // Fixed height for all images
 const IMAGE_WIDTH = 400; // Fixed width for all images
 
+const RestrictedOverlay = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  zIndex: 1,
+}));
+
 const CustomCard = styled(Card)(({ theme, selected }) => ({
   width: CARD_WIDTH,
   height: CARD_HEIGHT,
@@ -52,11 +65,11 @@ const ContentContainer = styled(CardContent)({
   textAlign: 'center',
 });
 
-function CustomItem({ item, selected, onSelect }) {
+function CustomItem({ item, selected, onSelect,isRestricted, category  }) {
   return (
-    <Box sx={{  display: 'flex', justifyContent: 'center' }}>
+    <Box sx={{  display: 'flex', justifyContent: 'center', position: 'relative'}}>
       <CustomCard selected={selected}>
-        <StyledCardActionArea onClick={() => onSelect(item.id)}>
+        <StyledCardActionArea onClick={() => onSelect(category, item.id)} disabled={isRestricted}>
           <ImageContainer>
             <StyledCardMedia
               component="img"
@@ -74,6 +87,13 @@ function CustomItem({ item, selected, onSelect }) {
           </ContentContainer>
         </StyledCardActionArea>
       </CustomCard>
+      {isRestricted && (
+        <RestrictedOverlay>
+          <Typography sx={{ fontWeight: 'lg', fontSize: '1vw', color: 'red' }} variant="body2">
+            This item is restricted.
+          </Typography>
+        </RestrictedOverlay>
+      )}
     </Box>
   );
 }
@@ -87,6 +107,8 @@ CustomItem.propTypes = {
   }).isRequired,
   selected: PropTypes.bool.isRequired,
   onSelect: PropTypes.func.isRequired,
+  isRestricted: PropTypes.bool.isRequired,
+  category: PropTypes.string.isRequired,
 };
 
 export default CustomItem;
