@@ -107,8 +107,7 @@ const EditCar = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-
-  console.log(restrictedItems)
+  console.log(car)
   useEffect(() => {
     const fetchCarData = async () => {
       const restrictionData = await loadAllRestrictions();
