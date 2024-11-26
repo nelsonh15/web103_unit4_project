@@ -1,4 +1,4 @@
-# WEB103 Project 4 - *Bolt Bucket*
+# WEB103 Project 4 - *ModMyCar Workshop*
 
 Submitted by: **Nelson Huang**
 
